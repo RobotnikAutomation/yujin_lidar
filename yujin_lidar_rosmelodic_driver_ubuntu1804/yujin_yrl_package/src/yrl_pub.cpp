@@ -88,32 +88,65 @@ int main(int argc, char **argv)
         return 1;
     }
     
-    /// Using factory function, create a new YRL_Library object
-    YRL_Library* instance = producing_func();
-    instance->start();
-
-    /// Set LiDAR's IP address as an input IP address for driver
-    instance->setInputIpAddress("192.168.1.250");
-    /// Set LiDAR's Calibration File Path
-    instance->setCalibrationFilePath("/home/jykim/catkin_ws/lk_serial_no.bin");
-    
-    /// Simple parameter set functions
-    instance->setSensorHeight(1.5); /// sensor at 1.5m height. The default height when the sensor is on ground is 0.07m
-    instance->setMaxRange(30); /// max range of 30m
-    instance->setUpperDataLimit(4); /// Data upper limit of 4 when the sensor is at 1.5m height
-    instance->setLowerDataLimit(-2); /// Data lower limit of -2 when the sensor is at 1.5m height
-    instance->setMaxVerticalAngle(45); /// default value of 45 (total 90 degrees of vertical FOV)
-    instance->setMinVerticalAngle(-45); /// default value of -45 (total 90 degrees of vertical FOV)
-    instance->setMaxHorizontalAngle(135); /// default value of 135 (total 270 degrees of horizontal FOV)
-    instance->setMinHorizontalAngle(-135); /// default value of -135 (total 270 degrees of horizontal FOV)
-    instance->setCurrentFilterLevel(0.01); /// Default filter level is 0.01. Depending on user applications, this filter level may need to be adjusted.
-    
     /// initialize a node
     ros::init(argc, argv, "yrl_pub");
     
     /// NodeHandle
     ros::NodeHandle nh("~");
+    double sensor_height = 1.5;
+    nh.param<double>("sensor_height", sensor_height, sensor_height);
 
+    double max_range = 30; 
+    nh.param<double>("max_range", max_range, max_range);
+    
+    double upper_limit = 4; 
+    nh.param<double>("upper_limit", upper_limit, upper_limit);
+    
+    double lower_limit = -2; 
+    nh.param<double>("lower_limit", lower_limit, lower_limit);
+    
+    double max_vertical_angle = 45; 
+    nh.param<double>("max_vertical_angle", max_vertical_angle, max_vertical_angle);
+    
+    double min_vertical_angle = -45; 
+    nh.param<double>("min_vertical_angle", min_vertical_angle, min_vertical_angle);
+    
+    double max_horizontal_angle = 135; 
+    nh.param<double>("max_horizontal_angle", max_horizontal_angle, max_horizontal_angle);
+    
+    double min_horizontal_angle = -135; 
+    nh.param<double>("min_horizontal_angle", min_horizontal_angle, min_horizontal_angle);
+    
+    double current_filter_level = 0.1; 
+    nh.param<double>("current_filter_level", current_filter_level, current_filter_level);
+        
+    std::string ip_address = "192.168.1.250"; 
+    nh.param<std::string>("ip_address", ip_address, ip_address);
+    
+    std::string calibration_path = "/home/robot/catkin_ws/src/yujin_lidar/lk_serial_no.bin"; 
+    nh.param<std::string>("calibration_path", calibration_path, calibration_path);
+    
+    /// Using factory function, create a new YRL_Library object
+    YRL_Library* instance = producing_func();
+    instance->start();
+
+    /// Set LiDAR's IP address as an input IP address for driver
+    instance->setInputIpAddress(ip_address);
+    /// Set LiDAR's Calibration File Path
+    instance->setCalibrationFilePath(calibration_path);
+    
+    /// Simple parameter set functions
+    instance->setSensorHeight(sensor_height); /// sensor at 1.5m height. The default height when the sensor is on ground is 0.07m
+    instance->setMaxRange(max_range); /// max range of 30m
+    instance->setUpperDataLimit(upper_limit); /// Data upper limit of 4 when the sensor is at 1.5m height
+    instance->setLowerDataLimit(lower_limit); /// Data lower limit of -2 when the sensor is at 1.5m height
+    instance->setMaxVerticalAngle(max_vertical_angle); /// default value of 45 (total 90 degrees of vertical FOV)
+    instance->setMinVerticalAngle(min_vertical_angle); /// default value of -45 (total 90 degrees of vertical FOV)
+    instance->setMaxHorizontalAngle(max_horizontal_angle); /// default value of 135 (total 270 degrees of horizontal FOV)
+    instance->setMinHorizontalAngle(min_horizontal_angle); /// default value of -135 (total 270 degrees of horizontal FOV)
+    instance->setCurrentFilterLevel(current_filter_level); /// Default filter level is 0.01. Depending on user applications, this filter level may need to be adjusted.
+    
+    
     /// Publisher yrl_pub
     ros::Publisher yrl_pub = nh.advertise<sensor_msgs::PointCloud2>("yrl_cloud", 2);
 	const uint32_t point_size = 16;
