@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="node_name"  default="yujin_yrl"/>
+  <arg name="topic_name"  default="yrl_cloud"/>
+  <arg name="frame_id"  default="yrl_cloud_id"/>
+  <arg name="publish_tf"  default="false"/>
+  
+  <arg name="sensor_height" default="0.06"/>
+  <arg name="max_range" default="30"/>
+  <arg name="upper_limit" default="4"/>
+  <arg name="lower_limit" default="-2"/>
+  <arg name="max_vertical_angle" default="45"/>
+  <arg name="min_vertical_angle" default="-45"/>
+  <arg name="max_horizontal_angle" default="135"/>
+  <arg name="min_horizontal_angle" default="-135"/>
+  <arg name="current_filter_level" default="0.1"/>
+  <arg name="ip_address" default="192.168.1.250"/>
+  <arg name="calibration_path" default="$(find yujin_yrl_package)/config/calibration.bin"/>
+
+  <!-- publish tfs through the robot_state_publisher -->
+  <node name="$(arg node_name)" pkg="yujin_yrl_package" type="yrl_pub" output="screen">
+    <rosparam command="load" file="$(find yujin_yrl_package)/config/params.yaml" subst_value="true"/>
+    <remap from="~yrl_cloud" to="~$(arg topic_name)"/>
+  </node>
+</launch>

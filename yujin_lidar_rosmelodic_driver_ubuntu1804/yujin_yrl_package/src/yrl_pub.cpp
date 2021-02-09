@@ -93,6 +93,13 @@ int main(int argc, char **argv)
     
     /// NodeHandle
     ros::NodeHandle nh("~");
+    
+    std::string frame_id = "192.168.1.250"; 
+    nh.param<std::string>("frame_id", frame_id, frame_id);
+
+    bool publish_tf = true; 
+    nh.param<bool>("publish_tf", publish_tf, publish_tf);
+
     double sensor_height = 1.5;
     nh.param<double>("sensor_height", sensor_height, sensor_height);
 
@@ -177,7 +184,7 @@ int main(int argc, char **argv)
 
         /// Publish a group of point clouds
 		sensor_msgs::PointCloud2 cloud;
-		cloud.header.frame_id = std::string("yrl_cloud_id");
+		cloud.header.frame_id = std::string(frame_id);
         cloud.header.stamp = ros::Time::now();
 
         cloud.fields.resize(4);
@@ -226,7 +233,10 @@ int main(int argc, char **argv)
         buffer_i.clear();
 
         /// Send Transform
-        br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", "yrl_cloud_id"));
+        if(publish_tf == true)
+        {
+            br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "map", frame_id));
+        }
         
         /// Error Check
         instance->getErrorCode(error_code_string);       
